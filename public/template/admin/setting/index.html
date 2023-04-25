@@ -1,0 +1,528 @@
+{include file="public/toper" /}
+<form class="layui-form">
+    <div class="layui-tab layui-tab-brief main-tab-container" lay-filter="main-tab">
+        <ul class="layui-tab-title main-tab-title">
+            <li class="<?php if (input('param.tab') == 1) echo 'layui-this'; ?>">基本设置</li>
+            <li class="<?php if (input('param.tab') == 2) echo 'layui-this'; ?>">站长信息</li>
+            <li class="<?php if (input('param.tab') == 3) echo 'layui-this'; ?>">SEO设置</li>
+            <li class="<?php if (input('param.tab') == 4) echo 'layui-this'; ?>">评论设置</li>
+            <!--<li class="<?php if (input('param.tab') == 4) echo 'layui-this'; ?>">水印设置</li>
+            <li class="<?php if (input('param.tab') == 5) echo 'layui-this'; ?>">畅言评论设置</li>
+            <li class="<?php if (input('param.tab') == 6) echo 'layui-this'; ?>">QQ登陆设置</li>-->
+            <li class="<?php if (input('param.tab') == 10) echo 'layui-this'; ?>">其他设置</li>
+            <div class="main-tab-item">相关设置</div>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item <?php if (input('param.tab') == 1) echo 'layui-show'; ?>">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站点名称</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="site_name"   value="{$setting['site_name']}" placeholder="请输入站点名称" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">站点名称，将显示在浏览器窗口标题等位置</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站Logo</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="logo" value="{$setting['logo']}"  class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="logo">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">网站logo，将显示在网站前台</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">二维码</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="qr_code" value="{$setting['qr_code']}"  class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="qr_code">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">公众号或者个人二维码，将显示在网站前台</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站根网址</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="site_url" value="{$setting['site_url']}" placeholder="请输入网站根网址"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">网站 URL，请以http://或者https://开头</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站备案号</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="icp" value="{$setting['icp']}"  placeholder="请输入网站备案号"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">在此输入网站ICP备案号，它将显示在页面底部</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">模板选择</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <select name="template_name">
+                            {foreach name="$temp" id="tem"}
+                                {if condition="$tem neq 'admin'"}
+                                    <option value="{$tem}" {if condition="$tem eq $setting['template_name']"} selected {/if}>{$tem} 模板</option>
+                                {/if}
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">前台模板选择</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">编辑器选择</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <select name="edit_type">
+                            <option value="1" {if condition="$setting['edit_type'] eq '1'"} selected {/if}>layui默认编辑器</option>
+                            <option value="2" {if condition="$setting['edit_type'] eq '2'"} selected {/if}>umeditor编辑器</option>
+                            <option value="3" {if condition="$setting['edit_type'] eq '3'"} selected {/if}>wangEditor</option>
+                        </select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">后台编辑器选择</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">上传选择</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <select name="upload_type"  lay-filter="upload_type">
+                            <option value="1" {if condition="$setting['upload_type'] eq 1"} selected {/if}>本地</option>
+                            <option value="2" {if condition="$setting['upload_type'] eq 2"} selected {/if}>七牛</option>
+                            <option value="3" {if condition="$setting['upload_type'] eq 3"} selected {/if}>阿里OSS</option>
+                        </select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">上传文件的存储位置</div>
+                </div>
+
+
+                <div class="qiniu_config" {if condition="$setting['upload_type'] neq 2"} style="display: none" {/if}>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">AccessKey</label>
+                        <div class="layui-input-inline input-custom-width">
+                            <input type="text" name="qiniu_config[accessKey]" value="{$setting['qiniu_config']['accessKey']|default=''}"  placeholder="请输入AccessKey"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">登录七牛后访问:https://portal.qiniu.com/user/key</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">SecretKey</label>
+                        <div class="layui-input-inline input-custom-width">
+                            <input type="text" name="qiniu_config[secretKey]" value="{$setting['qiniu_config']['secretKey']|default=''}"  placeholder="请输入SecretKey"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">登录七牛后访问:https://portal.qiniu.com/user/key</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">七牛空间名</label>
+                        <div class="layui-input-inline input-custom-width">
+                            <input type="text" name="qiniu_config[bucket]" value="{$setting['qiniu_config']['bucket']|default=''}"  placeholder="请输入七牛空间名"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">登录七牛后访问:https://portal.qiniu.com/bucket</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">七牛绑定域名</label>
+                        <div class="layui-input-inline input-custom-width">
+                            <input type="text" name="qiniu_config[domain]" value="{$setting['qiniu_config']['domain']|default=''}"  placeholder="请输入七牛绑定域名"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">七牛控制台绑定的域名 如：http://www.qq123.xin</div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站版权信息</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="copy"  autocomplete="off" placeholder="请输入网站版权信息" class="layui-textarea">{$setting['copy']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">在此输入网站版权信息，它将显示在页面底部</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方统计代码</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="site_statistice" lay-verify="" autocomplete="off" placeholder="请输入第三方统计代码" class="layui-textarea">{$setting['site_statistice']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">页面底部可以显示第三方统计</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站头部代码</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="head_html" lay-verify="" autocomplete="off" placeholder="请输入网站头部代码" class="layui-textarea">{$setting['head_html']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">网站头部代码将出现在之间</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">前台检索模型</label>
+                    <div class="layui-input-inline input-custom-width">
+                        {foreach name="$models" id="mo"}
+                            {if condition="$mo['id'] neq 4"}
+                                <input type="checkbox" name="search_model[]" value="{$mo.id}" title="{$mo.name}" {if condition="!empty($setting['search_model'][$mo['id']])"} checked {/if} >
+                            {/if}
+                        {/foreach}
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">选中的模型在前台搜索会出现该模型的内容</div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">开启网站</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="site_status" value="1" title="是" {if condition="$setting['site_status'] eq 1"} checked {/if}>
+                        <input type="radio" name="site_status" value="0" title="否" {if condition="$setting['site_status'] eq 0"} checked {/if}>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">开启评论审核</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="comment_examine" value="1" title="开启" {if condition="$setting['comment_examine'] eq 1"} checked {/if}>
+                        <input type="radio" name="comment_examine" value="0" title="关闭" {if condition="$setting['comment_examine'] eq 0"} checked {/if}>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="layui-tab-item <?php if (input('param.tab') == 2) echo 'layui-show'; ?>">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站长姓名</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="stationmaster_info[stationmaster_name]" value="{$setting['stationmaster_info']['stationmaster_name']}" placeholder="请输入站长姓名"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站长职业</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="stationmaster_info[stationmaster_occupation]" value="{$setting['stationmaster_info']['stationmaster_occupation']}"  placeholder="请输入站长职业"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站长签名</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="stationmaster_info[stationmaster_motto]" value="{$setting['stationmaster_info']['stationmaster_motto']}" placeholder="请输入站长签名"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">站长QQ</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="stationmaster_info[stationmaster_qq]" value="{$setting['stationmaster_info']['stationmaster_qq']}" placeholder="请输入站长QQ"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">交流群号码</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="stationmaster_info[stationmaster_qqnet]" value="{$setting['stationmaster_info']['stationmaster_qqnet']}"  placeholder="请输入交流群号码"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">交流群加群代码</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="stationmaster_info[stationmaster_qqnet_code]" lay-verify="" autocomplete="off" placeholder="请输入交流群加群代码" class="layui-textarea">{$setting['stationmaster_info']['stationmaster_qqnet_code']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">从http://qun.qq.com/join.html的加群组件获取网页加群代码</div>
+                </div>
+            </div>
+            <div class="layui-tab-item <?php if (input('param.tab') == 3) echo 'layui-show'; ?>">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题附加字</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="title_add" value="{$setting['title_add']}" placeholder="请输入标题附加字" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">网页标题通常是搜索引擎关注的重点，本附加字设置出现在标题名称后，如有多个关键字，建议用分隔符分隔</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站关键词</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="keywords" autocomplete="off" placeholder="请输入网站关键词" class="layui-textarea">{$setting['keywords']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">Keywords项出现在页面头部的标签中，用于记录本页面的关键字，多个关键字请用分隔符分隔</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">关键词描述</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="description" lay-verify="" autocomplete="off" placeholder="请输入网站关键词" class="layui-textarea">{$setting['description']}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">Description出现在页面头部的Meta标签中，用于记录本页面的摘要与描述，建议不超过80个字</div>
+                </div>
+            </div>
+            <div class="layui-tab-item <?php if (input('param.tab') == 4) echo 'layui-show'; ?>">
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">开启评论</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="comment_status" value="1" title="是" {if condition="$setting['comment_status'] eq 1"} checked {/if}>
+                        <input type="radio" name="comment_status" value="0" title="否" {if condition="$setting['comment_status'] eq 0"} checked {/if}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">评论间隔时间</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="comment_ban_time"  value="{$setting['comment_ban_time']}" placeholder="请输入用户评论间隔时间" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">用户评论时限制的间隔时间(单位：分钟)</div>
+                </div>
+            </div>
+            <div class="layui-tab-item <?php if (input('param.tab') == 10) echo 'layui-show'; ?>" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">首页banner图</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="index_banner" value="{$setting['index_banner']}" placeholder="" class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="index_banner">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">首页banner图，将显示在网站首页,为空则不显示</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">banner背景色</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="index_banner_bg"  value="{$setting['index_banner_bg']}" placeholder="请输入banner背景色" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">请输入十六进制颜色值如：#393D49</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">首页通栏广告</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="lemon_banner" value="{$setting['lemon_banner']}" placeholder="" class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="lemon_banner">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">首页通栏广告，将显示在网站首页,为空则不显示</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通栏广告链接</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="lemon_banner_link"  value="{$setting['lemon_banner_link']}" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">通栏广告链接，请以http://或者https://开头</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">下载说明图片</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="download_info" value="{$setting['download_info']}" placeholder="" class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="download_info">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">下载栏目的说明图片，也可以作为广告图片,为空则不显示</div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="site_base">立即提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['form', 'element', 'upload'], function () {
+        var element = layui.element //Tab的切换功能，切换事件监听等，需要依赖element模块
+            , form = layui.form
+            , upload=layui.upload
+            , jq = layui.jquery;
+        //七牛配置显示监控
+        form.on('select(upload_type)', function (data) {
+            if(data.value == 2){
+                jq('.qiniu_config').css('display','block');
+            }else{
+                jq('.qiniu_config').css('display','none');
+            }
+        });
+
+        //监听radio
+        form.on('radio(site_status)', function (data) {
+            if (data.value == '1') {
+                jq('textarea[name=site_closedreason]').parents('.layui-form-item').hide();
+            } else {
+                jq('textarea[name=site_closedreason]').parents('.layui-form-item').show();
+            }
+        });
+        if (jq('input[name=site_status]:checked').val() == '1') {
+            jq('textarea[name=site_closedreason]').parents('.layui-form-item').hide();
+        }
+        //logo
+        upload.render({
+            url: '{:url("upload/upimage")}'
+            , elem: '#logo'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=logo]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+
+        });
+        jq('input[name=logo]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+        //二维码
+        upload.render({
+            url: '{:url("upload/upimage")}'
+            , elem: '#qr_code'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=qr_code]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        jq('input[name=qr_code]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '">');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+        //下载说明图片
+        upload.render({
+            url: '{:url("upload/upimage")}'
+            , elem: '#download_info'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=download_info]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        jq('input[name=download_info]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '">');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+        //水印
+        /*upload.render({
+            url: '<?php echo url("upload/upimage") ?>'
+            , elem: '#watermark'
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=qr_code]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        jq('input[name=watermark]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });*/
+        //首页banner
+        upload.render({
+            url: '{:url("upload/upimage")}'
+            , elem: '#index_banner'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=index_banner]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        jq('input[name=index_banner]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+        //首页通栏广告
+        upload.render({
+            url: '{:url("upload/upimage")}'
+            , elem: '#lemon_banner'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=lemon_banner]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        jq('input[name=lemon_banner]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+        //监听提交
+
+        form.on('submit(site_base)', function (data) {
+            loading = layer.load(2, {
+                shade: [0.2, '#000'] //0.2透明度的白色背景
+            });
+            var param = data.field;
+            jq.post(
+                '{:url("indexPost")}',
+                param,
+                function (data) {
+                    if (data.code == 200) {
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();//do something
+                        });
+                    } else {
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                    }
+                }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+            return false;
+        });
+
+
+        //选项卡切换监听，改变iframe外层导航选项
+        element.on('tab(main-tab)', function (data) {
+            console.log(data.index); //得到当前Tab的所在下标
+            var index = data.index;
+            jq('.setting_ul dd', window.parent.document).removeClass('layui-this');
+            jq('.setting_ul dd:eq(' + index + ')', window.parent.document).addClass('layui-this');
+        });
+
+    });
+</script>
+</body>
+</html>

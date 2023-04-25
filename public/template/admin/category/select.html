@@ -1,0 +1,15 @@
+<form class="layui-form move-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">移动到</label>
+        <div class="layui-input-block">
+            <select name="to_category_id" lay-filter="move">
+                <option value=""></option>
+                {$category_select}
+            </select>
+        </div>
+    </div>
+    <fieldset class="layui-elem-field">
+        <legend>移动数据 ID</legend>
+        <div class="layui-field-box">{$ids}</div>
+    </fieldset>
+</form>

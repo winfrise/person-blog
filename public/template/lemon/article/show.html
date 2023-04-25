@@ -1,0 +1,67 @@
+{include file="public/header" /}
+{include file="public/breadcrumb" /}
+<!-- 文章 开始 -->
+<div class="main">
+	<div class="page_left">	
+	<div class="detail_container trans_3">
+		<h1>{$data['title']|default=''}</h1>
+		<div class="date_hits layui-row">
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>发布时间：</i>{$data['create_time']|format_datetime}</span>
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>热度：</i> {$data['hits']} ℃</span>
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>评论数：</i> <span class="lemon_comment_num">{$data['comment_num']|default=0}</span></span>
+		</div>
+		<div class="content">{$data['content']|htmlspecialchars_decode}</div>
+		{notempty name="data['keywords']"}
+			<div class="keywords"><p>{$data['keywords']}</p></div>
+		{/notempty}
+		<div class="prev_next">
+			<div class="prev" style="float: left;width: 50%">上一篇：<a href="{$data['prev']['url']|default=''}">{$data['prev']['title']|default=''}</a></div>
+			<div class="next" style="float: left;width: 50%">下一篇：<a href="{$data['next']['url']|default=''}">{$data['next']['title']|default=''}</a></div>
+			<div class="clear"></div>
+		</div>
+		<!--评论-->
+		{include file="public/comment" /}
+		<!--评论end-->
+			
+	</div>
+	</div>
+	<div class="page_right">
+		<div class="second_categorys_container">
+			<h3>栏目导航</h3>
+			<ol class="seond_category trans_3">
+				{volist name="second_categorys" id="vo"}
+					<li {if $data['category_id']==$vo['id']}class="selected"{/if}><a href="{$vo['url']}" class="layui-btn layui-btn-primary trans_1">{$vo['name']}</a></li>
+				{/volist}
+			</ol>	
+		</div>
+		{notempty name="hot_list"}  
+			<div class="hot_list">
+				<h3>相关文章</h3>
+				<ol class="page_right_list trans_3">
+					{volist name="hot_list" id="vo"}
+						<li><a href="{$vo['url']}">{$vo['title']}</a><span class="hits"> {$vo['hits']} ℃ </span></li>
+					{/volist}
+				</ol>
+			</div>
+		{/notempty}
+		<div class="mobile_qrcode_container">
+			<h3>手机扫码访问</h3>
+			<div class="mobile_qrcode wechat_qrcode trans_3">
+				{include file="public/qrcode" /}
+			</div>
+		</div>
+
+	</div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+layui.use('code', function(){ //加载code模块
+  	layui.code({
+	  title: '代码如下'
+	  ,skin: 'notepad' //如果要默认风格，不用设定该key。
+	  ,about: false
+	});
+});
+</script>
+<!-- 文章 结束 -->
+{include file="public/footer" /}

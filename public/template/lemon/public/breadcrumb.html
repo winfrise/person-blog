@@ -1,0 +1,12 @@
+<!-- 面包屑导航 开始 -->
+<div class="main breadcrumb_nav trans_3">
+	<span class="layui-breadcrumb" lay-separator="—">
+		<a href="/">首页</a>
+		{notempty name="$category_breadcrumb"}
+			{volist name="$category_breadcrumb" id="dd"}
+				<a href="{$dd.url|default='javascript:void(0)'}">{$dd.name}</a>
+			{/volist}
+		{/notempty}
+	</span>
+</div>
+<!-- 面包屑导航 结束 -->

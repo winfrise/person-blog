@@ -1,0 +1,85 @@
+{include file="public/header" /}
+{include file="public/breadcrumb" /}
+<!-- 下载开始 -->
+<div class="main">
+	<div class="page_left">
+		<!--广告-->
+		{notempty name="$setting['lemon_banner']"}
+			<div class="main index_main lemon_banner">
+				<a href="{$setting.lemon_banner_link|default=''}" target="_blank">
+					<img src="{$setting.lemon_banner}" alt="">
+				</a>
+			</div>
+		{/notempty}
+		<!--注意事项-->
+		{notempty name="$setting['download_info']"}
+			<div class="main index_main lemon_banner" style="background-color: #fff;padding: 10px">
+				<a href="javascript:void (0)">
+					<img src="{$setting.download_info}" style="width:80%">
+				</a>
+			</div>
+		{/notempty}
+		<!--下载区域-->
+		<hr class="layui-bg-red">
+		<div class="main">
+			<button class="layui-btn layui-btn-lg download_btn" data-is_pwd='{if condition="$data['is_pwd'] eq '0'"}0{else /}1{/if}'>HTTP下载&nbsp<i class="layui-icon layui-icon-download-circle"></i></button>
+		</div>
+		<hr class="layui-bg-red">
+
+	</div>
+	<div class="page_right">
+		<!--<div class="mobile_qrcode_container">
+			<h3>广告轮播</h3>
+			<div class="mobile_qrcode wechat_qrcode trans_3">
+
+			</div>
+		</div>-->
+		<div class="mobile_qrcode_container">
+			<h3>手机扫码访问</h3>
+			<div class="mobile_qrcode wechat_qrcode trans_3">
+				{include file="public/qrcode" /}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    layui.use(['form'], function(){
+        var layer = layui.layer
+			,$ = layui.$;
+        $('.download_btn').on('click',function () {
+            var id="{$Request.param.id}";
+            var is_pwd=$(this).data('is_pwd');
+            if(is_pwd == '1'){
+                layer.prompt({title: '请输入密码', formType: 1}, function(pass, index){
+                    layer.close(index);
+                    download(id,pass)
+
+                });
+			}else{
+                download(id,0);
+			}
+
+        });
+		function download(id,pwd) {
+            $.post({
+                'url': "{:url('index/download/show')}",
+                'data':{'id':id,'pwd':pwd},
+                success:function (data) {
+                    if(data.code == 200){
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();//do something
+                        });
+                    }else{
+                        layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+					}
+                },
+                error:function () {
+                    layer.msg('下载出错', {icon: 2, anim: 6, time: 1000});
+                }
+            });
+        }
+	});
+
+</script>
+<!-- 下载结束 -->
+{include file="public/footer" /}

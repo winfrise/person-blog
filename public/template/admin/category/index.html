@@ -1,0 +1,157 @@
+{include file="public/toper" /}
+<div class="layui-tab layui-tab-brief main-tab-container">
+    <ul class="layui-tab-title main-tab-title">
+        <li class="layui-this"><a href="{:url('category/index')}">栏目列表</a></li>
+        <li><a href="{:url('category/add')}">添加栏目</a></li>
+        <!--<li><a href="{:url('category/add','model_id=0')}">添加外部链接</a></li>-->
+        <li><a href="javascript:void (0)" class="update_content_links">更新内容链接</a></li>
+        <span class="main-tab-item">栏目管理</span>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form class="layui-form">
+                <table class="list-table admin-category-table">
+                    <thead>
+                    <tr>
+                        <th style="min-width:50px;width: 5%">排序</th>
+                        <th style="width: 5%">ID</th>
+                        <th style="width: 50%">栏目名称</th>
+                        <th style="width: 10%">所属模型</th>
+                        <th style="width:10%;text-align: center;">导航显示</th>
+                        <th style="width:90px">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {$data}
+                    </tbody>
+                    <thead>
+                    <tr>
+                        {notempty name="data"}
+                            <th colspan="6"><button class="layui-btn layui-btn-sm" lay-submit lay-filter="sort">排序</button></th>
+                        {/notempty}
+                        {empty name="data"}
+                        <th colspan="6" class="content">
+                            <span class="layui-btn layui-btn-small">暂无数据</span>
+                        </th>
+                        {/empty}
+                    </tr>
+                    </thead>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['element', 'layer', 'form'], function(){
+        var element = layui.element
+                ,jq = layui.jquery
+                ,form = layui.form;
+
+        //监听排序提交
+        form.on('submit(sort)', function(data){
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            var param = data.field;
+            jq.post('{:url("category/sort")}',param,function(data){
+                if(data.code == 200){
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                        location.reload();//do something
+                    });
+                }else{
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            }).error (function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+            return false;
+        });
+
+        //ajax删除
+        jq('.del_btn').click(function(){
+            var name = jq(this).attr('category-name');
+            var id = jq(this).attr('category-id');
+            layer.confirm('确定删除【'+name+'】?', function(index){
+                loading = layer.load(2, {
+                    shade: [0.2,'#000'] //0.2透明度的白色背景
+                });
+                jq.post('{:url("category/del")}',{'id':id},function(data){
+                    if(data.code == 200){
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                            location.reload();//do something
+                        });
+                    }else{
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                    }
+                }).error(function () {
+                    layer.close(loading);
+                    layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+                });
+            });
+        });
+
+        //导航是否显示
+        jq('.list-switch').click(function(){
+            var id = jq(this).attr('category-id');
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            jq.post('{:url("category/menuSwitch")}',{'id':id},function(data){
+                if(data.code == 200){
+                    location.reload();
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 1, time: 1000});
+                }else{
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+        });
+        //链接预览
+        jq('.list-table td .link').hover(function(){
+            var model_id=jq(this).data('model');
+            if(model_id == 4){
+                var link = jq(this).data('href');
+                 layer.tips( link, this, {
+                 tips: [2, '#09C7F7'],
+                 time: false
+                 });
+            }
+        },function(){
+            layer.closeAll('tips');
+        });
+
+        //更新内容链接
+        jq('.update_content_links').click(function(){
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            jq.post('{:url("category/updateUrl")}',{},function(data){
+                if(data.code == 200){
+                    layer.msg(data.msg, {icon: 1, time: 2000});
+                    layer.close(loading);
+                    location.reload();
+                }else{
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+        });
+
+
+    })
+</script>
+</body>
+</html>

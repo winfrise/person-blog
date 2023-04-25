@@ -1,0 +1,181 @@
+{include file="public/toper" /}
+<div class="layui-tab-brief main-tab-container">
+    <ul class="layui-tab-title main-tab-title">
+        <li><a href="{:url('admin/category/index')}">栏目列表</a></li>
+        <li class="layui-this">栏目修改</li>
+        <div class="main-tab-item">栏目管理</div>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form class="layui-form">
+                <div class="layui-tab layui-tab-card">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">基本选项</li>
+                        <li>模板设置</li>
+                    </ul>
+                    <div class="layui-tab-content" style="min-height: 780px">
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择模型</label>
+                                <div class="layui-input-inline input-custom-width">
+                                    <select name="model_id" lay-verify="required" lay-filter="model_select" disabled>
+                                        {foreach name="model_select" id="model"}
+                                            <option value="{$model['id']}" {if condition='$model["id"] eq $category["model_id"]'}selected{/if}>{$model.name}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">模型创建后不可修改</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">上级栏目</label>
+                                <div class="layui-input-block input-custom-width select-parent-id">
+                                    <select name="parent_id" lay-verify="required">
+                                        <option value="0">作为一级栏目</option>
+                                        {$category_select}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">栏目名称</label>
+                                <div class="layui-input-block input-custom-width">
+                                    <input type="text" name="name" required lay-verify="required" placeholder="请输入栏目名称" autocomplete="off" class="layui-input" value="{$category.name}">
+                                    <input type="hidden" name="id"   class="layui-input" value="{$category.id}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item category_url" {if condition="$category['model_id'] neq '4'"}style="display: none"{/if}>
+                                <label class="layui-form-label">外部链接</label>
+                                <div class="layui-input-inline input-custom-width">
+                                    <input type="text" name="url" placeholder="请输入外部链接" autocomplete="off" class="layui-input" value="{$category.url}">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">链接需http://或https://开头</div>
+                            </div>
+                            <!--<div class="layui-form-item">
+                                <label class="layui-form-label">栏目图片</label>
+                                <div class="layui-input-inline input-custom-width">
+                                    <input type="text" name="image_url" value=""  placeholder="" class="layui-input">
+                                    <button type="button" class="layui-btn layui-upload-button" id="image">
+                                        <i class="layui-icon">&#xe67c;</i>上传图片
+                                    </button>
+                                </div>
+
+                            </div>-->
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">栏目描述</label>
+                                <div class="layui-input-block input-custom-width">
+                                    <textarea name="description" placeholder="请输入栏目描述" class="layui-textarea">{$category.description}</textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">排序</label>
+                                <div class="layui-input-inline input-custom-width">
+                                    <input type="text" name="sort" required autocomplete="off" class="layui-input" value="{$category.sort}">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">值越小越靠前</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">是否显示</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="is_menu" value="1" title="是" {if condition="$category['is_menu'] eq 1"}checked{/if}>
+                                    <input type="radio" name="is_menu" value="0" title="否" {if condition="$category['is_menu'] eq 0"}checked{/if}>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">封面页模版</label>
+                                <div class="layui-input-block input-custom-width">
+                                    <input type="text" name="index_template"  placeholder="请输入封面页模版" autocomplete="off" class="layui-input" value="{$category.index_template|default='index'}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" >
+                                <label class="layui-form-label">列表页模版</label>
+                                <div class="layui-input-block input-custom-width">
+                                    <input type="text" name="list_template"  placeholder="请输入列表页模版" autocomplete="off" class="layui-input" value="{$category.list_template|default='list'}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">详情页模版</label>
+                                <div class="layui-input-block input-custom-width">
+                                    <input type="text" name="show_template"  placeholder="请输入详情页模版" autocomplete="off" class="layui-input" value="{$category.show_template|default='show'}">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="cate_edit">立即提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['element', 'form', 'upload'], function () {
+        var element = layui.element
+                , form = layui.form
+                , jq = layui.$;
+        //图片上传
+        /*layui.upload({
+            url: "{:url('upload/upimage')}"
+            , elem: '#image'
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , success: function (res) {
+                layer.close(loading);
+                jq('input[name=image_url]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }
+        });*/
+        /*jq('input[name=image_url]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });*/
+
+        //监听提交
+        form.on('submit(cate_edit)', function (data) {
+            loading = layer.load(2, {
+                shade: [0.2, '#000'] //0.2透明度的白色背景
+            });
+            var param = data.field;
+            jq.post('{:url("category/editPost")}', param, function (data) {
+                if (data.code == 200) {
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                        location.reload();//do something
+                    });
+                } else {
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器出错', {icon: 2, anim: 6, time: 1000});
+            });
+            return false;
+        });
+        //模型选择监听
+        form.on('select(model_select)',function (data) {
+            if (data.value == 4){
+                jq(".category_url").show();
+                jq(".category_url input[name=url]").attr('required','required');
+                jq(".category_url input[name=url]").attr('lay-verify','required');
+            }else{
+                jq(".category_url").hide();
+                jq(".category_url input[name=url]").removeAttr('required');
+                jq(".category_url input[name=url]").removeAttr('lay-verify');
+            }
+        });
+
+    })
+</script>
+</body>
+</html>

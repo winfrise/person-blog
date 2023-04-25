@@ -1,0 +1,131 @@
+{include file="public/toper" /}
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header header">
+        <div class="layui-main">
+            <a class="logo" href="{:url('Index/index')}" target="_self">
+                <img src="__TMPL__/images/logo-top.png" alt="">
+            </a>
+            <div class="top_admin_user">
+                <a href="/" target="_blank">网站首页</a> |
+                <a class="update_cache" href="javascript:void(0)">更新缓存</a> |
+                <a class="logout_btn" href="javascript:void(0)">退出</a>
+            </div>
+        </div>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <!--<li class="layui-nav-item layui-nav-itemed">-->
+                <li class="layui-nav-item">
+                    <a href="javascript:void(0);">首页</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:void(0)" class="layui-nav-url" data-url="{:url('admin/Index/home')}"><i class="layui-icon layui-icon-home"></i>首页面板</a></dd>
+                        <dd><a href="javascript:void(0)" class="layui-nav-url" data-url="{:url('admin/Index/edit')}"><i class="layui-icon layui-icon-username"></i>管理员设置</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:void(0);">内容</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Category/index')}"><i class="layui-icon layui-icon-menu-fill"></i>栏目管理</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Article/index')}"><i class="layui-icon layui-icon-form"></i>内容管理</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Comment/index')}"><i class="layui-icon layui-icon-reply-fill"></i>评论管理</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Upload/index')}"><i class="layui-icon layui-icon-file"></i>附件管理</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="javascript:void(0);">会员</a></li>
+                <li class="layui-nav-item setting_ul">
+                    <a href="javascript:void(0);">设置</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/index','tab=1')}"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/index','tab=2')}"><i class="layui-icon ">&#xe612;</i>站长信息</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/index','tab=3')}"><i class="layui-icon layui-icon-form"></i>SEO设置</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/index','tab=4')}"><i class="layui-icon layui-icon-reply-fill"></i>评论设置</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/index','tab=10')}"><i class="layui-icon layui-icon-util"></i>其他设置</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/sitemap')}"><i class="layui-icon layui-icon-location"></i>Sitemap</a></dd>
+                        <dd><a href="javascript:void(0);" class="layui-nav-url" data-url="{:url('admin/Setting/links')}"><i class="layui-icon layui-icon-link"></i>友情链接</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="layui-body iframe-container">
+        <div class="iframe-mask" id="iframe-mask"></div>
+        <iframe class="admin-iframe" id="admin-iframe" name="main" src="{:url('home')}"></iframe>
+    </div>
+
+
+    <div class="layui-footer footer">
+        <div class="layui-main">
+            <p>2018 © <a target="_blank" href="http://www.qq123.xin">LemonCMS</a></p>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    layui.use(['layer', 'element','jquery','tree'], function(){
+        var layer = layui.layer
+                ,element = layui.element //导航的hover效果、二级菜单等功能，需要依赖element模块
+                ,jq = layui.$;
+
+        //左边菜单点击
+        jq('.layui-nav-url').click(function(){
+            var url=jq(this).data('url');
+            jq('iframe').attr('src',url);
+            //出现遮罩层
+            jq("#iframe-mask").show();
+            //遮罩层消失
+            jq("#admin-iframe").load(function(){
+                jq("#iframe-mask").fadeOut(1);
+            });
+        });
+
+
+
+
+        //更新缓存
+        jq('.update_cache').click(function(){
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            jq.getJSON('{:url("admin/index/upCache")}',function(data){
+                if(data.code == 200){
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                        location.reload();//do something
+                    });
+                }else{
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            });
+            layer.close(loading);
+        });
+
+        //退出登陆
+        jq('.logout_btn').click(function(){
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            jq.getJSON('{:url("login/logout")}',function(data){
+                if(data.code == 200){
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                        location.reload();//do something
+                    });
+                }else{
+                    layer.close(loading);
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                }
+            }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+            layer.close(loading);
+        });
+
+    });
+</script>
+</body>
+</html>

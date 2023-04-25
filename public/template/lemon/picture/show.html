@@ -1,0 +1,138 @@
+{include file="public/header" /}
+{include file="public/breadcrumb" /}
+<!-- 图集 开始 -->
+<div class="main">
+	<div class="page_left">	
+	<div class="detail_container trans_3">
+		<h1>{$data['title']|default=''}</h1>
+		<div class="date_hits layui-row">
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>发布时间：</i>{$data['create_time']|format_datetime}</span>
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>热度：</i> {$data['hits']|default='0'} ℃</span>
+			<span class="layui-col-xs4 layui-col-sm4 layui-col-md4"><i>评论数：</i> <span class="lemon_comment_num">{$data['comment_num']|default=0}</span></span>
+		</div>
+		<div class="pictures layui-carousel" id="layer-photos-demo" >
+			<div carousel-item id="layer-photos">
+				{if condition="$data['is_pwd_img'] eq 1"}
+					{volist name=":json_decode($data['images'],true)" id="vo"}
+						<div>
+							<img src="{$vo}" class="photos-src" alt="{$data['title']|default=''}">
+						</div>
+					{/volist}
+				{else /}
+					<div>
+						<i class="layui-icon layui-icon-password" style="line-height: 300px;font-size: 300px;text-align: center;display: block"></i>
+					</div>
+				{/if}
+
+			</div>
+
+		</div>
+
+		<div class="content">{$data['content']|default=''|html_entity_decode}</div>
+		{notempty name="data['keywords']"}
+			<div class="keywords"><p>{$data['keywords']}</p></div>
+		{/notempty}
+		<div class="prev_next">
+			<!--<div class="prev" style="float: left;width: 50%">上一篇：<a href="{$data['prev']['url']|default=''}">{$data['prev']['title']|default=''}</a></div>
+			<div class="next" style="float: left;width: 50%">下一篇：<a href="{$data['next']['url']|default=''}">{$data['next']['title']|default=''}</a></div>-->
+			<div class="clear"></div>
+		</div>
+		<!--评论-->
+		{include file="public/comment" /}
+		<!--评论end-->
+	</div>
+	</div>
+	<div class="page_right">
+		<div class="second_categorys_container">
+			<h3>栏目导航</h3>
+			<ol class="seond_category trans_3">
+				{volist name="second_category" id="vo"}
+					<li {if $data['category_id']==$vo['id']}class="selected"{/if}><a href="{$vo['url']}" class="layui-btn layui-btn-primary trans_1">{$vo['name']}</a></li>
+				{/volist}
+			</ol>	
+		</div>
+		<div class="mobile_qrcode_container">
+			<h3>手机扫码访问</h3>
+			<div class="mobile_qrcode wechat_qrcode trans_3">
+				{include file="public/qrcode" /}
+			</div>
+		</div>
+
+	</div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+layui.use(['code','carousel'], function(){ //加载code模块
+    var layer=layui.layer
+		,carousel =layui.carousel
+		,$=layui.$;
+  	layui.code({
+	  title: '代码如下'
+	  ,skin: 'notepad' //如果要默认风格，不用设定该key。
+	  ,about: false
+	});
+
+	//轮播图
+    carousel.render({
+        elem: '#layer-photos-demo'
+        ,width: 'inherit' //设置容器宽度
+		,anim: 'default'  //轮播切换动画方式 default（左右切换）updown（上下切换）fade（渐隐渐显切换）
+        ,arrow: 'always' //始终显示箭头
+		,autoplay: false //是否自动切换
+		,indicator: 'none' //指示器位置
+        //,anim: 'updown' //切换动画方式
+    });
+
+	$('.photos-src').on('click',function () {
+	    var img_src=$(this).attr('src');
+        var img = new Image();
+        img.src = img_src;
+        var str='<img src="'+ img_src +'">';
+
+        var document_width=$(document.body).width();
+        var area1="['+img.width + 'px,' +img.height +'px']";
+        if(img.width > document_width){
+            area1='auto';
+		}
+
+        layer.open({
+            type: 1,
+            title: false,
+			area : area1,
+            closeBtn: 1,
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: str
+        });
+    });
+
+	var is_pwd_img="{$data['is_pwd_img']}";
+	if (is_pwd_img == 0){
+        var id="{$Request.param.id}";
+        layer.prompt({title: '请输入密码', formType: 1}, function(pass, index){
+
+            $.post({
+				'url':"{:url('index/picture/show')}",
+                'data':{'id':id,'pwd':pass},
+                success:function (data) {
+                    if(data.code == 200){
+                        layer.close(index);
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();//do something
+                        });
+                    }else{
+                        layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                    }
+                },
+                error:function () {
+                    layer.msg('请稍后查看', {icon: 2, anim: 6, time: 1000});
+                }
+			});
+        });
+	}
+
+
+});
+</script>
+<!-- 图集 结束 -->
+{include file="public/footer" /}

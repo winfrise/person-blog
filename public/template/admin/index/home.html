@@ -1,0 +1,40 @@
+{include file="public/toper" /}
+<div class="layui-tab layui-tab-brief main-tab-container">
+    <ul class="layui-tab-title main-tab-title">
+      <li class="main-tab-item">首页面板</li>
+    </ul>
+
+    <div class="layui-tab-content index_panel_container">
+        <div class="left">
+            <blockquote class="layui-elem-quote">
+                <p>ThinkPHP 版本：<?php echo THINK_VERSION; ?></p><hr>
+                <p>服务器系统：<?php echo php_uname('s');  ?></p><hr>
+                <p>WEB运行环境：<?php echo function_exists('apache_get_version')?apache_get_version():$_SERVER["SERVER_SOFTWARE"];  ?></p><hr>
+                <p>运行PHP版本：&nbsp;<?php echo 'PHP'.phpversion();?></p><hr>
+                <p>数据库信息：MySQL&nbsp;<?php echo function_exists('mysqli_get_server_info') ? mysqli_get_server_info(mysqli_connect(config("database.hostname"),config("database.username"),config("database.password"))) : '';?></p><hr>
+                <p>上传大小限制：<?php echo ini_get('upload_max_filesize');?></p><hr>
+                <p>POST大小限制：<?php echo ini_get('post_max_size');?></p>
+            </blockquote> 
+            <blockquote class="layui-elem-quote">
+                <p>QQ用户交流群：593739481&nbsp;&nbsp;
+                    <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=f79768a1be482c1e32132b71dacaf15b0806c85f848ec719cfb4a4d3581e0027"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="LemonCMS" title="LemonCMS"></a>
+                </p>
+                <hr>
+                <p>QQ高级付费群：838652492&nbsp;&nbsp;&nbsp;
+                    <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=b32cbc8133893701665619389d7d5b6072e3a8916e1597b4c79fd5a7451e6b46"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="LeCMS高级交流群" title="LeCMS高级交流群"></a>
+                </p>
+                <hr>
+                <p>QQ联系我：304587661&nbsp;&nbsp;
+                    <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=304587661&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:304587661:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a>
+                </p>
+            </blockquote>
+        </div>
+        <div class="right">
+
+        </div>
+        
+
+    </div>
+</div>
+</body>
+</html>

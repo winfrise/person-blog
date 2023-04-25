@@ -1,0 +1,38 @@
+{include file="public/header" /}
+{include file="public/breadcrumb" /}
+<!-- 视频列表开始 -->
+<div class="main">
+	<div class="picture_list_container">
+		<ul>
+			{notempty name="$data"}
+				{volist name="$data" id="vo"}
+					<li class="trans_3">
+						<a href="{$vo['url']}" class="pic lazy-pic_height_156" >
+							<img class="lazy lazy-img"  lay-src="{$vo['image_url']}" alt="{$vo['title']}">
+						</a>
+						<h2 class="title">
+							<a href="javascript:void(0)">
+								{if $vo['is_top']==1}
+									<span class="top">置顶</span>
+								{/if}
+								{$vo['title']}
+							</a>
+						</h2>
+						<p class="desc">{$vo['description']}</p>
+						<div class="date_hits">
+							<p class="date"><span>{$vo['create_time']|format_datetime}</span></p>
+							<span class="hits"><i class="layui-icon" title="点击量">&#xe62c;</i> {$vo['hits']} ℃</span>
+							<a href="{$vo['url']}" class="layui-btn layui-btn-primary show-photos-url">详情</a>
+						</div>
+					</li>
+				{/volist}
+			{/notempty}
+
+		<div class="clear"></div>
+		</ul>
+	</div>
+	<div id="page" style="min-height: 10px;">{$page}</div>
+</div>
+<!-- 视频列表开始 -->
+
+{include file="public/footer" /}

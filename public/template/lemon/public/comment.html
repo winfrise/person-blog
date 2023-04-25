@@ -1,0 +1,459 @@
+<div class="fly-panel detail-box" id="flyReply">
+    <div class="layui-form layui-form-pane">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="">
+                    <label class="layui-form-label" style="width: 100px"><span style="color: red">*&nbsp;</span>QQ:</label>
+                    <div class="layui-input-inline" id="qq">
+                        <input type="number" name="qq" required lay-verify="required" placeholder="请输入您的QQ号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="">
+                    <label class="layui-form-label" style="width: 100px"><span style="color: red">*&nbsp;</span>昵称:</label>
+                    <div class="layui-input-inline" id="qq_nick_name">
+                        <input type="text" name="qq_nick_name" required lay-verify="required" placeholder="自动获取" autocomplete="off" class="layui-input" readonly>
+                    </div>
+                </div>
+
+                <input type="hidden" value="0" name="lemon_comment_reply_id">
+                <input type="hidden" value="{$data['category_id']}" name="category">
+                <input type="hidden" {if condition="$Request.param.id neq ''"}value="{$Request.param.id}" {else /} value="{$data['id']}"{/if} name="id">
+            </div>
+            <div class="layui-form-item lemon_comment_reply">
+                <span class="lemon_comment_reply_user"></span>
+                <span class="lemon_comment_reply_remove" style="float: left"><i class="layui-icon layui-icon-close"></i></span>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <div class="layui-input-block">
+                    <textarea id="L_content" name="content" required lay-verify="required" placeholder="来吐槽吧~~"
+                              class="layui-textarea fly-editor" style="height: 50px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-filter="comment" lay-submit>吐槽</button>
+            </div>
+        </form>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+        <legend>吐槽一下</legend>
+    </fieldset>
+
+    <ul class="jieda" id="jieda">
+        <li class="fly-none">消灭零回复</li>
+    </ul>
+    <span class="layui-btn layui-btn-primary layui-btn-fluid lemon_comment_more" data-page="1" style="display: none">加载更多</span>
+</div>
+<!--评论js(写的比较乱 欢迎前端大神整理下)-->
+<script>
+    layui.use(['form'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.$;
+        //回复or点赞 监控事件
+        $('#jieda').on('click','.jieda-reply span', function () {
+            var _this = $(this);
+            var _type = _this.attr('type');
+            if (_type == 'reply') {
+                //回复
+                //吐槽tips
+                layer.tips('来吐槽吧', '#L_content', {
+                    tips: [1,'#009688'],
+                    time: 1000
+                });
+                //瞄点跳转
+                $("html,body").animate({
+                    scrollTop:($("#L_content").offset().top)-150
+                },1000);
+                var parent_dom=_this.closest('li'); //获取到评论的父级
+                var id = parent_dom.data('id');//获取评论id
+                var user= parent_dom.find('cite').html();//昵称
+
+                $("input[name=lemon_comment_reply_id]").val(id);//评论id
+                $(".lemon_comment_reply_user").html('@' + user);//回复用户
+                $(".lemon_comment_reply").css('display','block');
+                //console.log(user,id);
+
+            }
+
+        });
+        //qq输入失去焦点事件获取昵称
+        $("input[name=qq]").blur(function(){
+            var qq=$("input[name=qq]").val();
+            if(qq.search(/^[1-9]\d{4,10}$/) !=-1){
+                var index = layer.load(0,
+                    {
+                        content:'加载中~',
+                        time: 10*1000,
+                        success: function(layero){
+                            layero.find('.layui-layer-content').css('padding-top', '40px');
+                        }});
+                $.post({
+                    'url':"{:url('api/api/getQQNickName')}",
+                    'data':{'qq':qq},
+                    success:function (data) {
+                        if(data.code == 200){
+                            $("input[name=qq_nick_name]").val(data.name);
+                        }else{
+                            $("input[name=qq_nick_name]").attr('placeholder',data.msg);
+                            //提示错误
+                            layer.close(index);
+                        }
+                    },
+                    error:function () {
+                        $("input[name=qq_nick_name]").attr('placeholder','获取失败');
+                        //提示错误
+                        layer.close(index);
+                    }
+
+                });
+
+
+                layer.close(index);
+            }else{
+                layer.tips('qq号格式错误', '#qq');
+                $("html,body").animate({
+                    scrollTop:($("#qq").offset().top)-100
+                },1000);
+                $("input[name='qq_nick_name']").val('');
+            }
+
+        });
+        //检测qq或者昵称是否存在
+        function chickQQAndNickName() {
+            var qq=$("input[name=qq]").val();
+            var nickname=$("input[name='qq_nick_name']").val();
+
+            if(qq == ''){
+                layer.tips('请输入qq号', '#qq');
+                $("html,body").animate({
+                    scrollTop:($("#qq").offset().top)-100
+                },1000);
+                return false;
+            }else{
+                if(qq.search(/^[1-9]\d{4,10}$/) == -1){
+                    layer.tips('qq号格式错误', '#qq');
+                    $("html,body").animate({
+                        scrollTop:($("#qq").offset().top)-100
+                    },1000);
+                    return false;
+                }
+            }
+            if(nickname == ''){
+                layer.tips('昵称获取失败', '#qq_nick_name');
+                $("html,body").animate({
+                    scrollTop:($("#qq_nick_name").offset().top)-100
+                },1000);
+                return false;
+            }
+        }
+        //查看评论下叠加的回复
+        $("#jieda").on('click','.lemon_cat_comment',function () {
+            var _this=$(this);
+            var _class=_this.find('i').attr('class');
+            var more=_this.parent().find('.lemon_comment_reply_more');
+
+            if(_class.indexOf('layui-icon-down') >= 0){
+                _this.next().css('display','block');
+
+                //页数
+                var page_num=more.data('page');
+                //li数量
+                var li_sum=_this.find('span').html();
+                //已有li数量
+                var li_num=_this.next().children('li').length;
+                if(li_num < li_sum){
+                    more.css('display','block');
+                }
+                if(parseInt(page_num) == 1 && li_num == 0){
+                    console.log('ajax获取');
+                    var lemon_comment_id=_this.closest('li').data('id');//评论id
+                    getCommentData(lemon_comment_id,$(this));
+                }
+
+
+                //console.log('已获取');
+
+
+
+
+                //修改class为收起
+                _this.find('i').removeClass('layui-icon-down');
+                _this.find('i').addClass('layui-icon-up');
+            }else{
+
+                //隐藏回复
+                _this.next().css('display','none');
+
+                more.css('display','none');
+                //修改class
+                _this.find('i').removeClass('layui-icon-up');
+                _this.find('i').addClass('layui-icon-down');
+            }
+
+
+        })
+        //移除@回复
+        $("#flyReply").on('click','.lemon_comment_reply_remove',function () {
+            $(".lemon_comment_reply").css('display','none');
+
+            $("input[name=lemon_comment_reply_id]").val(0);//评论id 置为0
+            $(".lemon_comment_reply_user").html('');//清除@回复用户
+        });
+
+        //吐槽提交
+        form.on('submit(comment)', function (data) {
+            var res=chickQQAndNickName();
+            if(res == false){
+                return false;
+            }
+            var index = layer.load(0,
+                {
+                    content:'加载中~',
+                    time: 10*1000,
+                    success: function(layero){
+                        layero.find('.layui-layer-content').css('padding-top', '40px');
+                    }});
+            var param = data.field;
+            $.post(
+                '{:url("Comment/add")}',
+                param,
+                function (data) {
+                    if (data.code == 200) {
+                        layer.close(index);
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                            //location.reload();//do something
+                        });
+                        // 评论后清楚评论内容
+                        $("#L_content").val(' ');
+
+                        //根据配置文件是否审核评论来判断是否直接插入评论
+                        var comment_examine= "{$setting['comment_examine']}";
+                        if(comment_examine == 1){
+                            return true;
+                        }
+                        //插入评论
+                        var str=getCommentStr(data.data);
+                        var parent_id=data.data[0].parent_id;
+                        if(parent_id == 0){
+                            $("#jieda").prepend(str);
+                        }else{
+                            $("#jieda").find('li').each(function () {
+                                var comment_id=$(this).data('id');
+                                if(comment_id == parent_id){
+                                    //先判断是否存在加载更多
+
+                                    if($(this).find('.lemon_cat_comment span').html() != undefined){
+                                        var  i_class=$(this).find('.lemon_cat_comment').find('i').attr('class');
+                                        var  reply_num=$(this).find('.lemon_cat_comment').next().children('li').length;
+                                        if(i_class.indexOf('layui-icon-down') >= 0){
+                                            $(this).find('.lemon_cat_comment').trigger('click');
+                                            if(reply_num != 0){
+                                                $(this).find('.lemon_cat_comment').next().prepend(str);
+                                            }
+                                        }else{
+                                            //直接插入
+                                            $(this).find('.lemon_cat_comment').next().prepend(str);
+                                            var count=$(this).find('.lemon_cat_comment span').html()
+                                            $(this).find('.lemon_cat_comment span').html(parseInt(count)+1);
+                                        }
+                                    }else{
+                                        var new_str="<div style=\"padding-top: 20px\">" +
+                                        "                    <a href=\"javascript:void(0)\" class=\"lemon_cat_comment\">" +
+                                        "                        查看此评论下的<span>1</span>条回复" +
+                                        "                        <i class=\"layui-icon layui-icon-up\"></i>" +
+                                        "                    </a>" +
+                                        "                    <ul style=\"display: block\">";
+                                        new_str +=str;
+                                        new_str +=
+                                        "                    </ul>" +
+                                        "                   <span class=\"layui-btn layui-btn-primary lemon_comment_reply_more\" data-page=\"1\" style=\"display: none;margin-left: 50px\">加载更多</span>      "+
+                                        "                </div>";
+                                        $(this).closest('li').append(new_str);
+                                    }
+
+                                }
+                            });
+                        }
+
+                        //评论数加1
+                        $('.lemon_comment_num').html(Number($('.lemon_comment_num').html())+1);
+
+                        $('.fly-none').css('display','none');
+
+                    } else {
+                        layer.close(index);
+                        layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                    }
+                }).error(function () {
+                layer.close(index);
+                layer.msg('吐槽失败', {icon: 2, anim: 6, time: 1000});
+            });
+            return false;
+        });
+        //查看更多评论
+        $("#flyReply").on('click','.lemon_comment_more',function () {
+            getCommentData(0,$(this));
+        });
+        //查看更多回复
+        $('#flyReply').on('click','.lemon_comment_reply_more',function () {
+            var lemon_comment_id=$(this).closest('li').data('id');//评论id
+            getCommentData(lemon_comment_id,$(this));
+        });
+        //获取评论 reply_id != 0 获取回复
+        function getCommentData(comment_id,_this) {
+            var index = layer.load(0,
+                {
+                    content:'加载中~',
+                    time: 10*1000,
+                    success: function(layero){
+                        layero.find('.layui-layer-content').css('padding-top', '40px');
+                    }});
+            var more;
+            //var id=$("input[name=id]").val();//内容的id
+            var id="{$data['id']}";//内容的id
+            if (comment_id == 0){
+                var page=$('.lemon_comment_more').attr('data-page');//页码
+                var next=parseInt(page)+1;
+                $('.lemon_comment_more').attr('data-page',next); //
+            }else{
+                more=_this.parent().find('.lemon_comment_reply_more');
+                var page=more.attr('data-page');//回复页码
+                var next=parseInt(page)+1;
+                more.attr('data-page',next); //
+            }
+            var category_id="{$data['category_id']}";
+            $.post({
+                'url':"{:url('comment/index')}",
+                'data':{'page':page,'id':id,'comment_id':comment_id,'category':category_id},
+                success:function (data) {
+
+                    var da=data.data;
+                    //console.log(da);
+                    if(da.length != 0){
+                        //移除0回复
+                        $('.fly-none').remove();
+
+                        if(comment_id == 0){
+                            //显示加载更多
+                            $('.lemon_comment_more').css('display','block');
+                            var str=getCommentStr(da);
+                            //console.log(str);
+                            $("#jieda").append(str);
+
+                            //获取加载的li数量
+                            var child=$('#jieda').children('li').length;
+                            //console.log(child);
+                            if(child >= data.total){
+                                //加载完了
+                                $('.lemon_comment_more').css('display','none');
+                            }
+
+                        }else{
+                            //显示加载更多
+                            more.css('display','block');
+                            var str=getCommentStr(da);
+
+                            $("#jieda").find('li').each(function () {
+                                var data_id=$(this).data('id');
+                                if(data_id == comment_id){
+
+                                    $(this).find('.lemon_cat_comment').next().append(str);
+
+                                    //获取回复已经加载的数量
+                                    var li_num=$(this).find('.lemon_cat_comment').next().children('li').length;
+                                    $(this).find('.lemon_cat_comment span').html(data.total);
+                                    console.log('回复数量=>'+li_num);
+                                    if(li_num >= data.total){
+                                        $(this).find('.lemon_comment_reply_more').css('display','none');
+                                    }
+                                }
+                            });
+
+                        }
+
+                    }else{
+                        //没有数据
+                        $('.lemon_comment_more').css('display','none');
+                        //more.css('display','none');
+
+                    }
+
+                },
+                error:function () {
+                    //console.log('error');
+                }
+            });
+            layer.close(index);
+
+        }
+
+        //生成str
+        function getCommentStr(da){
+            var str='';
+            for (var i=0;i < da.length;i++){
+                var send=new Function("return" + da[i].send)();
+                str +="<li data-id='"+ da[i].id +"'";
+                if (da[i].parent_id != 0){
+                    str +="style=\"padding-left: 55px;padding-top: 20px\"";
+                }
+                str+=">" +
+                    "            <a name=\"item-1111111111\"></a>" +
+                    "            <div class=\"detail-about detail-about-reply\">" +
+                    "                <a class=\"fly-avatar\" href=\"\">" +
+                    "                    <img src='"+ send.image +"' >" +
+                    "                </a>" +
+                    "                <div class=\"fly-detail-user\">" +
+                    "                    <a href=\"javascript:void(0)\" class=\"fly-link\">" +
+                    "                        <cite>"+ send.name +"</cite>" +
+                    "                    </a>";
+                if(da[i].parent_id != 0){
+                    var receive=new Function("return" + da[i].receive)();
+                    str +="<br class=\"comment_huifu_br\">" +
+                        "                                    <span style=\"padding-right: 10px\">回复</span>" +
+                        "                                    <a href=\"javascript:void(0)\" class=\"fly-link\">" +
+                        "                                        <cite>"+ receive.name +"</cite>" +
+                        "                                    </a>";
+                }
+
+
+                str +=
+                    "                </div>" +
+                    "                <div class=\"detail-hits\">" +
+                    "                    <span>"+ da[i].create_time +"</span>" +
+                    "                </div>" +
+                    "            </div>" +
+                    "            <div class=\"detail-body jieda-body photos\">" +
+                    "                <p>"+ da[i].content +"</p>" +
+                    "            </div>" +
+                    "            <div class=\"jieda-reply\">" +
+                    "              <span class=\"jieda-zan\" type=\"zan\">" +
+                    "                <i class=\"layui-icon-praise layui-icon icon-zan\"></i>" +
+                    "                <em>0</em>" +
+                    "              </span>" +
+                    "                <span type=\"reply\">" +
+                    "                <i class=\"layui-icon layui-icon-dialogue icon-svgmoban53\"></i>" +
+                    "                回复" +
+                    "              </span>" +
+                    "            </div>";
+                if(da[i].reply != 0 && da[i].parent_id == 0){
+                    str +="<div style=\"padding-top: 20px\">" +
+                        "                    <a href=\"javascript:void(0)\" class=\"lemon_cat_comment\">" +
+                        "                        查看此评论下的<span>"+ da[i].reply +"</span>条回复" +
+                        "                        <i class=\"layui-icon layui-icon-down\"></i>" +
+                        "                    </a>" +
+                        "                    <ul style=\"display: none\">" +
+                        "                    </ul>" +
+                        "                   <span class=\"layui-btn layui-btn-primary lemon_comment_reply_more\" data-page=\"1\" style=\"display: none;margin-left: 50px\">加载更多</span>      "+
+                        "                </div>";
+                }
+
+                str += "        </li>";
+            }
+            return str;
+        }
+        getCommentData(0);
+
+
+    });
+</script>

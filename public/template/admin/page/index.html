@@ -1,0 +1,269 @@
+{include file="public/toper" /}
+<div class="layui-tab layui-tab-brief main-tab-container">
+    <ul class="layui-tab-title main-tab-title">
+        {foreach name="models" id="model"}
+        <li {if condition="$model['tablename'] eq 'page'"}class="layui-this"{/if}><a href="{$model.url}">{$model.name}
+    </a></li>
+        {/foreach}
+        <span class="main-tab-item">单页管理</span>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <!--搜索开始-->
+            <form class="layui-form layui-form-pane search-form" method="get">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="search" value="{$search|default=''}"  placeholder="请输入标题搜索" autocomplete="off" class="layui-input">
+                    </div>
+                    <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="">搜索</button>
+                </div>
+                <!-- 每页数据量 -->
+                <div class="layui-form-item page-size">
+                    <label class="layui-form-label total">共计 {$data.total|default='0'} 条</label>
+                    <label class="layui-form-label">每页数据条</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="page_size" value="{$data['per_page']|default='10'}" lay-verify="number" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                    <button class="layui-btn layui-btn-normal " lay-submit="" lay-filter="">确定</button>
+                </div>
+            </form>
+            <!--搜索结束-->
+            <form class="layui-form" method="get">
+                <input type="hidden" name="model_id" value="{$model_id}">
+                <table class="list-table">
+                    <thead>
+                    <tr>
+                        <th style="width:40px"><input type="checkbox" name="checkAll" lay-filter="checkAll" title=" "></th>
+                        <th style="min-width:25px">ID</th>
+                        <th>标题</th>
+                        <th>所属栏目</th>
+                        <th class="can_click">
+                            点击量
+                        </th>
+                        <th class="can_click">
+                            添加时间
+                        </th>
+                        <th style="width:90px">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {notempty name="data['data']"}
+                    {foreach name="data['data']" id="da"}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="ids[{$da['id']}]" lay-filter="checkOne" value="{$da['id']}" title=" ">
+                        </td>
+                        <td>{$da['id']}</td>
+                        <td>
+                            <a class="list-title" href="{:url('index/page/show',array('id'=>$da.id))}" target="_blank">
+                                {$da['title']}</a>
+                            {notempty name="$da['image_url']"}
+                            <a class="thumb" href="{$da['image_url']}" target="_blank" thumb="{$da['image_url']}"><i class="layui-icon layui-icon-picture"></i></a>
+                            {/notempty}
+                        </td>
+                        <td>{$da['category_name']}</td>
+                        <td>{$da['hits']}</td>
+                        <td>{$da['create_time']}</td>
+                        <td style="text-align: center;">
+                            <a href="{:url('edit',array('id'=>$da['id']))}" class="layui-btn layui-btn-sm" title="编辑" style="float: left"><i class="layui-icon"></i></a>
+                            <a class="layui-btn layui-btn-sm layui-btn-danger del_btn" article-id="{$da.id}" title="删除" article-name={$da['title']}><i class="layui-icon"></i></a>
+                        </td>
+                    </tr>
+                    {/foreach}
+                    {/notempty}
+                    </tbody>
+                    <thead>
+                    <tr>
+                        <th colspan="3">
+                            {notempty name="data['data']"}
+                                <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit lay-filter="delete">删除</button>
+                                <!--单页模式禁止移动-->
+                                <!--<button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit lay-filter="move">移动</button>-->
+                            {/notempty}
+                            <!--单页模式禁止添加-->
+                            <!--<a href="{:url('add')}" class="layui-btn layui-btn-warm layui-btn-sm">添加</a>-->
+                        </th>
+                        <th colspan="6"><div id="page">{$page}</div></th>
+                    </tr>
+                    </thead>
+
+                </table>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['element', 'layer', 'form' ,'upload' ,'laypage'], function(){
+        var element = layui.element
+                ,jq = layui.$
+                ,form = layui.form
+                ,laypage = layui.laypage
+                ,upload = layui.upload;
+        //图片预览
+        jq('.list-table td .thumb').hover(function(){
+            jq(this).append('<img class="thumb-show" style="width: 200px;height: 150px" src="'+jq(this).attr('thumb')+'" >');
+        },function(){
+            jq(this).find('img').remove();
+        });
+        //ajax删除单个内容
+        jq('.del_btn').click(function(){
+            var name = jq(this).attr('article-name');
+            var id = jq(this).attr('article-id');
+            layer.confirm('确定删除【'+name+'】?', function(index){
+                loading = layer.load(2, {
+                    shade: [0.2,'#000'] //0.2透明度的白色背景
+                });
+                jq.post(
+                        '{:url("isDel")}',
+                        {'id':id},
+                        function(data){
+                            if(data.code == 200){
+                                layer.close(loading);
+                                layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                                    location.reload();//do something
+                                });
+                            }else{
+                                layer.close(loading);
+                                layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                            }
+                        }).error(function () {
+                    layer.close(loading);
+                    layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+                });
+
+            });
+
+        });
+        //全选
+        form.on('checkbox(checkAll)', function(data){
+            if(data.elem.checked){
+                jq("input[type='checkbox']").prop('checked',true);
+            }else{
+                jq("input[type='checkbox']").prop('checked',false);
+            }
+            form.render('checkbox');
+        });
+        //选择一个
+        form.on('checkbox(checkOne)', function(data){
+            var is_check = true;
+            if(data.elem.checked){
+                jq("input[lay-filter='checkOne']").each(function(){
+                    if(!jq(this).prop('checked')){ is_check = false; }
+                });
+                if(is_check){
+                    jq("input[lay-filter='checkAll']").prop('checked',true);
+                }
+            }else{
+                jq("input[lay-filter='checkAll']").prop('checked',false);
+            }
+            form.render('checkbox');
+        });
+        //监听批量删除提交
+        form.on('submit(delete)', function(data){
+            //判断是否有选项
+            var is_check = false;
+            jq("input[lay-filter='checkOne']").each(function(){
+                if(jq(this).prop('checked')){ is_check = true; }
+            });
+            if(!is_check){
+                layer.msg('请选择数据', {icon: 2,anim: 6,time: 1000});
+                return false;
+            }
+            //确认删除
+            layer.confirm('确定批量删除?', function(index){
+                loading = layer.load(2, {
+                    shade: [0.2,'#000'] //0.2透明度的白色背景
+                });
+                var param = data.field;
+
+                jq.post('{:url("delete")}',param,function(data){
+                    if(data.code == 200){
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                            location.reload();//do something
+                        });
+                    }else{
+                        layer.close(loading);
+                        layer.msg(data.msg, {icon: 2,anim: 6, time: 1000});
+                    }
+                }).error(function () {
+                    layer.close(loading);
+                    layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+                });
+            });
+            return false;
+        });
+
+        //监听移动提交
+        form.on('submit(move)', function(data){
+            //判断是否有选项
+            var is_check = false;
+            jq("input[lay-filter='checkOne']").each(function(){
+                if(jq(this).prop('checked')){ is_check = true; }
+            });
+            if(!is_check){
+                layer.msg('请选择数据', {icon: 2,anim: 6,time: 1000});
+                return false;
+            }
+            //移动到位置选择 var params = JSON.stringify(data.field);
+            loading = layer.load(2, {
+                shade: [0.2,'#000'] //0.2透明度的白色背景
+            });
+            var param = data.field;
+            jq.post('{:url("category/select")}',param,function(data){
+                layer.open({
+                    type: 1,
+                    title: '数据移动',
+                    area: ['auto', '490px'],
+                    content: data //这里content是一个普通的String
+                });
+                form.render('select');//刷新重新加载select
+                layer.close(loading);
+                form.on('select(move)', function(data){
+                    param.to_category_id = data.value;
+                    var selected_text = jq(data.elem).find("option:selected").text();
+                    //确认移动
+                    layer.confirm('确定批量移动至【'+selected_text+'】?', function(index){
+                        loading = layer.load(2, {
+                            shade: [0.2,'#000'] //0.2透明度的白色背景
+                        });
+                        jq.post('{:url("page/removeCategory")}',param,function(data){
+                            if(data.code == 200){
+                                layer.close(loading);
+                                layer.msg(data.msg, {icon: 1, time: 1000}, function(){
+                                    location.reload();//do something
+                                });
+                            }else{
+                                layer.close(loading);
+                                layer.msg(data.msg, {icon: 2,anim: 6, time: 1000});
+                            }
+                        }).error(function () {
+                            layer.close(loading);
+                            layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+                        });
+                    });
+                });
+            }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+
+            return false;
+        });
+
+
+
+
+
+
+
+
+
+    });
+
+</script>
+</body>
+</html>

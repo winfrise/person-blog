@@ -1,0 +1,242 @@
+{include file="public/toper" /}
+<div class="layui-tab-brief main-tab-container">
+    <ul class="layui-tab-title main-tab-title">
+        <li class="layui-this"><a href="{:url('add')}">添加下载</a></li>
+        <span class="main-tab-item">下载管理</span>
+    </ul>
+    <div class="layui-tab-content">
+        <form class="layui-form">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属栏目</label>
+                    <div class="layui-input-inline input-custom-width select-parent-id">
+                        <select name="category_id" lay-verify="required">
+                            <option value=""></option>
+                            {$category_select}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入标题"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">关键词</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="keywords" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">关键词以英文逗号隔开</div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">文件描述</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <textarea name="description" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">封面图片</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="image_url" value="" placeholder="" class="layui-input">
+                        <button type="button" class="layui-btn layui-upload-button" id="image">
+                            <i class="layui-icon layui-icon-upload-drag"></i>图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">留空则不显示</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">下载文件</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="file_url" value="" placeholder="" class="layui-input" required lay-verify="required">
+                        <button type="button" class="layui-btn layui-upload-button" id="file">
+                            <i class="layui-icon layui-icon-upload-drag"></i>文件
+                        </button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文件名称</label>
+                    <div class="layui-input-inline input-custom-width">
+                            <input type="text" name="filename" autocomplete="off" class="layui-input" required lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">演示地址</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="demo_url" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">请以http或https开头</div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">是否推荐</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="is_recommend" value="1" title="是" checked>
+                        <input type="radio" name="is_recommend" value="0" title="否" checked>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">用于前台推荐调用</div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">是否置顶</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="is_top" value="1" title="是">
+                        <input type="radio" name="is_top" value="0" title="否" checked>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">用于前台置顶调用</div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">是否显示</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="is_show" value="1" title="是" checked>
+                        <input type="radio" name="is_show" value="0" title="否">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">用于前台显示调用</div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">是否加密</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="radio" name="is_pwd" value="1" title="是" lay-filter="is_pwd">
+                        <input type="radio" name="is_pwd" value="0" title="否" checked lay-filter="is_pwd">
+                        <input type="text" name="pwd"  placeholder="请输入四位密码,为空则随机四位" autocomplete="off"
+                               class="layui-input" style="display: none;" maxlength="4">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">查看是否需要密码</div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">添加时间</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="create_time" value="{:date('Y-m-d H:i:s')}" id="date" lay-verify="datetime" placeholder="YYYY-MM-DD hh:mm:ss" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">默认是当前时间</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">点击量</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="hits" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">链接地址</label>
+                    <div class="layui-input-inline input-custom-width">
+                        <input type="text" name="url" autocomplete="off" class="layui-input">
+                        {:token()}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="cate_add">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    layui.use(['element', 'form', 'upload'  ,'laydate'], function () {
+        var element = layui.element
+                , form = layui.form
+                , jq = layui.$
+                ,laydate = layui.laydate;
+        var upload = layui.upload;
+        //监听是否需要密码
+        form.on('radio(is_pwd)', function(data){
+            if(data.value == 1){
+                jq("input[name=pwd]").css('display','block');
+            }else{
+                jq("input[name=pwd]").css('display','none');
+            }
+
+        });
+        jq('input[name=image_url]').hover(function () {
+            jq(this).after('<img class="input-img-show" src="' + jq(this).val() + '" >');
+        }, function () {
+            jq(this).next('img').remove();
+        });
+
+
+        //时间插件
+        laydate.render({
+            elem: '#date' //指定元素
+            ,type: 'datetime'
+        });
+        //图片上传
+        var up = upload.render({
+            url: "{:url('upload/upimage')}"
+            , elem: '#image'
+            , size: "{$Think.POST_MAX *1024}"
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=image_url]').val(res.path);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+        //文件上传
+        var up = upload.render({
+            url: "{:url('upload/upfile')}"
+            , elem: '#file'
+            , size: "{$Think.POST_MAX *1024}"
+            ,accept:'file'
+            , before: function (input) {
+                loading = layer.load(2, {
+                    shade: [0.2, '#000'] //0.2透明度的白色背景
+                });
+            }
+            , done: function (res) {
+                layer.close(loading);
+                jq('input[name=file_url]').val(res.path);
+                jq('input[name=filename]').val(res.info['name']);
+                layer.msg(res.msg, {icon: 1, time: 1000});
+            }, error: function () {
+                layer.close(loading);
+                layer.msg('上传失败');
+            }
+        });
+
+
+
+        //监听提交
+        form.on('submit(cate_add)', function (data) {
+            loading = layer.load(2, {
+                shade: [0.2, '#000'] //0.2透明度的白色背景
+            });
+            var param = data.field;
+            jq.post(
+                    '{:url("addPost")}',
+                    param,
+                    function (data) {
+                        if (data.code == 200) {
+                            layer.close(loading);
+                            layer.msg(data.msg, {icon: 1, time: 1000}, function () {
+                                location.reload();//do something
+                            });
+                        } else {
+                            layer.close(loading);
+                            layer.msg(data.msg, {icon: 2, anim: 6, time: 1000});
+                        }
+                    }).error(function () {
+                layer.close(loading);
+                layer.msg('服务器错误', {icon: 2, anim: 6, time: 1000});
+            });
+            layer.close(loading);
+            return false;
+        });
+
+    })
+</script>
+</body>
+</html>
+

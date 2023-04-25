@@ -1,0 +1,36 @@
+{include file="public/header" /}
+{include file="public/breadcrumb" /}
+<!-- 文章 开始 -->
+<div class="main">
+	<div class="page_left">	
+	<div class="detail_container trans_3">
+		<h1>{$data['title']|default=''}</h1>
+		<div class="line"></div>
+		<div class="content">{$data['content']|html_entity_decode}</div>
+		<div class="prev_next"></div>
+		<!--评论-->
+		{include file="public/comment" /}
+		<!--评论end-->
+	</div>
+	</div>
+	<div class="page_right">
+		<div class="second_categorys_container">
+			<h3>栏目导航</h3>
+			<ol class="seond_category trans_3">
+				{volist name="second_categorys" id="vo"}
+					<li {if $data['category_id']==$vo['id']}class="selected"{/if}><a href="{$vo['url']}" class="layui-btn layui-btn-primary trans_1">{$vo['name']}</a></li>
+				{/volist}
+			</ol>	
+		</div>
+		<div class="mobile_qrcode_container">
+			<h3>手机扫码访问</h3>
+			<div class="mobile_qrcode wechat_qrcode trans_3">
+				{include file="public/qrcode" /}
+			</div>
+		</div>
+
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- 文章 结束 -->
+{include file="public/footer" /}
